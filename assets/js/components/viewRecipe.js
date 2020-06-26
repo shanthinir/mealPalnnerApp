@@ -12,7 +12,7 @@ class viewRecipe extends Component {
     }
 
     getRecipe() {
-        axios.get(`http://localhost:8000/api/recipe/`+this.state.params.id)
+        axios.get(`http://localhost:8000/api/recipe/`+ this.state.params.id)
             .then(recipe => {this.setState({ recipe: recipe.data || [], loading: false})
                 .catch(err => console.log('err', err));
             });
@@ -21,7 +21,7 @@ class viewRecipe extends Component {
 
     render() {
         const loading = this.state.loading;
-        this.state.params = this.props.match;
+        this.state.params = this.props.match.params;
         return(
             <div>
                 <section className="row-section">
