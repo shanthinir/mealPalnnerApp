@@ -22,12 +22,11 @@ class DefaultController extends AbstractController
         ]);
     }
 
-
     /**
      * @Route("api/recipes", name="recipes")
      * @return Response
      */
-    Public function getRecipes()
+    Public function getAllRecipes()
     {
         $data = [];
         $recipes = $this->getDoctrine()
@@ -114,5 +113,52 @@ class DefaultController extends AbstractController
         $entityManager->flush();
 
         return new JsonResponse(['status' => 'Recipe created!'], Response::HTTP_CREATED);
+    }
+
+    /**
+     * @Route("api/recipe/update/{id}", name="updateRecipe", methods={"PUT"})
+     * @param $id
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function update($id, Request $request): JsonResponse
+    {
+        $recipe = $this->getDoctrine()
+            ->getRepository(Recipe::class)
+            ->findOneBy(['id' => $id]);
+
+        $data = json_decode($request->getContent(), true);
+
+        if (empty($name) || empty($categoryTag) || empty($description)) {
+            throw new NotFoundHttpException('Expecting mandatory parameters!');
+        }
+
+        empty($data['name']) ? true : $recipe->setName($data['name']);
+        empty($data['category']) ? true : $recipe->setCategoryTag($data['category']);
+        empty($data['description']) ? true : $recipe->setDescription($data['description']);
+        empty($data['ingredients']) ? true : $recipe->setIngredients($data['ingredients']);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($recipe);
+        $entityManager->flush();
+
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("api/recipe/delete/{id}", name="deleteRecipe", methods={"DELETE"})
+     * @param $id
+     * @return JsonResponse
+     */
+    public function delete($id): JsonResponse
+    {
+        $recipe = $this->getDoctrine()
+            ->getRepository(Recipe::class)
+            ->findOneBy(['id' => $id]);
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($recipe);
+        $entityManager->flush();
+
+        return new JsonResponse(['status' => 'Recipe deleted'], Response::HTTP_OK);
     }
 }
