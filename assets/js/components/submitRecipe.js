@@ -4,15 +4,16 @@ import axios from 'axios';
 class submitRecipe extends Component {
 
     constructor(props) {
-        super(props)
-
+        super(props);
         this.onChangeName = this.onChangeName.bind(this);
         this.onChangeDescription = this.onChangeDescription.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
         this.state = {
             name: '',
-            description: ''
+            description: '',
+            message: '',
+            showResult: false
         }
     }
 
@@ -34,6 +35,7 @@ class submitRecipe extends Component {
 
         axios.post('http://localhost:8000/api/recipe/submit', recipeObject)
             .then((res) => {
+                this.setState({ message: res.data.status, showResult: true });
                 console.log(res.data)
             }).catch((error) => {
             console.log(error)
@@ -46,6 +48,7 @@ class submitRecipe extends Component {
     render() {
         return (
             <div className="wrapper">
+                <div className={`result alert alert-success ${this.state.showResult == true? 'active': ''}`}>{ this.state.message }</div>
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group">
                         <label>Name</label>
@@ -53,7 +56,7 @@ class submitRecipe extends Component {
                     </div>
                     <div className="form-group">
                         <label>Description</label>
-                        <input type="text" value={this.state.email} onChange={this.onChangeDescription} className="form-control" />
+                        <input type="text" value={this.state.description} onChange={this.onChangeDescription} className="form-control" />
                     </div>
                     <div className="form-group">
                         <input type="submit" value="Submit Recipe" className="btn btn-block submit" />

@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Recipe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends AbstractController
@@ -51,7 +53,8 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Route("api/recipe/{id}", name="viewRecipe")
+     * @Route("api/recipe/{id}", name="viewRecipe", requirements={"id"="\d+"} )
+     * @param $id
      * @return Response
      */
     public function show($id)
@@ -81,5 +84,35 @@ class DefaultController extends AbstractController
         return $response;
     }
 
+    /**
+     * @Route("api/recipe/submit", name="submitRecipe")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function add(Request $request): JsonResponse
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $data = json_decode($request->getContent(), true);
 
+        $name = $data['name'];
+        $description = $data['description'];
+
+        if (empty($name) || empty($description)) {
+            throw new NotFoundHttpException('Expecting mandatory parameters!');
+        }
+
+        $recipe = new Recipe();
+        $recipe->setName($name);
+        $recipe->setDescription($description);
+        $recipe->setAuthorId(1);
+        //TODO:: Refactor once user module is implemented
+
+        // tell Doctrine you want to (eventually) save the Recipe (no queries yet)
+        $entityManager->persist($recipe);
+
+        // actually executes the queries (i.e. the INSERT query)
+        $entityManager->flush();
+
+        return new JsonResponse(['status' => 'Recipe created!'], Response::HTTP_CREATED);
+    }
 }
