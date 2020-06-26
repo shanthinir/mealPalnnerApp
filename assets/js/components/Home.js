@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Route, Switch,Redirect, Link, withRouter} from 'react-router-dom';
 import Recipes from './Recipes';
 import viewRecipe from './viewRecipe';
+import submitRecipe from './submitRecipe';
 
 class Home extends Component {
 
@@ -51,6 +52,7 @@ class Home extends Component {
                     <Redirect exact from="/" to="/recipes" />
                     <Route path="/recipes" component={Recipes} />
                     <Route path="/viewRecipe/:id" component={viewRecipe} />
+                    <Route path="/submitRecipe" component={submitRecipe} />
                     {/*<Route path="/posts" component={Posts} />*/}
                 </Switch>}
             </div>
