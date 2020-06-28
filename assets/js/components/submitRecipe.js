@@ -30,7 +30,8 @@ class submitRecipe extends Component {
 
         const recipeObject = {
             name: this.state.name,
-            description: this.state.description
+            description: this.state.description,
+            userId: 3
         };
 
         axios.post('http://localhost:8000/api/recipe/submit', recipeObject)

@@ -108,8 +108,12 @@ class DefaultController extends AbstractController
         $recipe = new Recipe();
         $recipe->setName($name);
         $recipe->setDescription($description);
-        $recipe->setuserId(rand(1,10));
+
         //TODO:: Refactor once user module is implemented
+        $user = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->find(rand(1,10));
+        $recipe->setUser($user);
 
         // tell Doctrine you want to (eventually) save the Recipe (no queries yet)
         $entityManager->persist($recipe);

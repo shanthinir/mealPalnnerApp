@@ -38,7 +38,7 @@ class Recipe
     private $imageUrl;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true))
      */
     private $dateCreated;
 
@@ -47,13 +47,6 @@ class Recipe
      * @ORM\OneToMany(targetEntity="Ingredients", mappedBy="recipe")
      */
     private $ingredients = [];
-
-    /**
-     * Recipe constructor.
-     */
-    public function __construct() {
-        $this->ingredients = new ArrayCollection();
-    }
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -66,9 +59,16 @@ class Recipe
     private $category;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="recipe")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="recipe", cascade={"persist"})
      */
     private $user;
+
+    /**
+     * Recipe constructor.
+     */
+    public function __construct() {
+        $this->ingredients = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -108,8 +108,7 @@ class Recipe
     {
         $this->image_url = $image_url;
 
-        return $this;
-    }
+        return $this;    }
 
     public function getUserId(): ?int
     {
