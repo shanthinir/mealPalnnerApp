@@ -43,10 +43,9 @@ class Recipe
     private $dateCreated;
 
     /**
-     * @ORM\Column(type="array", nullable=true)
-     * @ORM\OneToMany(targetEntity="Ingredients", mappedBy="recipe")
+     * @ORM\OneToMany(targetEntity="App\Entity\Ingredients", mappedBy="recipe")
      */
-    private $ingredients = [];
+    private $ingredients;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -134,12 +133,12 @@ class Recipe
         return $this;
     }
 
-    public function getIngredients(): ?array
+    public function getIngredients()
     {
         return $this->ingredients;
     }
 
-    public function setIngredients(?array $ingredients): self
+    public function setIngredients(Ingredients $ingredients)
     {
         $this->ingredients = $ingredients;
 

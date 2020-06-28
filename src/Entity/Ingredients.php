@@ -42,16 +42,19 @@ class Ingredients
     private $sugar;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      */
     private $quantity;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
      * @ORM\ManyToOne(targetEntity="Recipe", inversedBy="ingredients")
-     * @ORM\JoinColumn(name="recipeId", referencedColumnName="id")
      */
     private $recipe;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $recipeId;
 
     public function getId(): ?int
     {
@@ -118,12 +121,12 @@ class Ingredients
         return $this;
     }
 
-    public function getQuantity(): ?int
+    public function getQuantity(): ?string
     {
         return $this->quantity;
     }
 
-    public function setQuantity(?int $quantity): self
+    public function setQuantity(?string $quantity): self
     {
         $this->quantity = $quantity;
 
@@ -136,6 +139,18 @@ class Ingredients
     }
 
     public function setRecipe(?int $recipeId): self
+    {
+        $this->recipeId = $recipeId;
+
+        return $this;
+    }
+
+    public function getRecipeId(): ?int
+    {
+        return $this->recipeId;
+    }
+
+    public function setRecipeId(int $recipeId): self
     {
         $this->recipeId = $recipeId;
 

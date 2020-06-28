@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Recipe;
 use App\Entity\User;
+use App\Entity\Ingredients;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,12 +39,18 @@ class DefaultController extends AbstractController
             $user = $this->getDoctrine()
                 ->getRepository(User::class)
                 ->find($recipe->getUserId());
+
+            $ingredients = $this->getDoctrine()
+                ->getRepository(Ingredients::class)
+                ->findByRecipe($recipe->getId());
+
             $data [] = [
                 'id'=> $recipe->getId(),
                 'name' => $recipe->getName(),
                 'user' => $user->getFirstName().' '.($user->getLastName()??'') ,
                 'description' => $recipe->getDescription(),
-                'dateCreated' => $recipe->getDateCreated()
+                'dateCreated' => $recipe->getDateCreated(),
+                'ingredients' => $ingredients
             ];
         }
 
