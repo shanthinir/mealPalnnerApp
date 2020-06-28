@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Recipe;
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,11 +35,15 @@ class DefaultController extends AbstractController
             ->findAll();
 
         foreach ($recipes as $recipe) {
+            $user = $this->getDoctrine()
+                ->getRepository(User::class)
+                ->find($recipe->getUserId());
             $data [] = [
                 'id'=> $recipe->getId(),
                 'name' => $recipe->getName(),
-                'author' => $recipe->getAuthorId(),
-                'description' => $recipe->getDescription()
+                'user' => $user->getFirstName().' '.($user->getLastName()??'') ,
+                'description' => $recipe->getDescription(),
+                'dateCreated' => $recipe->getDateCreated()
             ];
         }
 
@@ -70,7 +75,7 @@ class DefaultController extends AbstractController
 
         $data [] = [
             'name' => $recipe->getName(),
-            'author' => $recipe->getAuthorId(),
+            'user' => $recipe->getUserId(),
             'description' => $recipe->getDescription()
         ];
 
@@ -103,7 +108,7 @@ class DefaultController extends AbstractController
         $recipe = new Recipe();
         $recipe->setName($name);
         $recipe->setDescription($description);
-        $recipe->setAuthorId(1);
+        $recipe->setuserId(rand(1,10));
         //TODO:: Refactor once user module is implemented
 
         // tell Doctrine you want to (eventually) save the Recipe (no queries yet)

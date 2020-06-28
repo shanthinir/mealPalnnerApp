@@ -11,4 +11,5 @@ class RecipeCrudController extends AbstractCrudController
     {
         return Recipe::class;
     }
+
 }
