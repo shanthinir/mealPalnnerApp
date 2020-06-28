@@ -19,7 +19,7 @@ class AppFixtures extends Fixture
             $recipe = new Recipe();
             $recipe->setName($faker->sentence($nbWords = 3, $variableNbWords = true));
             $recipe->setDescription($faker->paragraph($nbSentences = 3, $variableNbSentences = true));
-            $recipe->setAuthorId(rand(1,10));
+            $recipe->setuserId(rand(1,10));
 
             $manager->persist($recipe);
         }

@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Recipe;
+use App\Entity\User;
+use App\Entity\Ingredients;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,12 +24,11 @@ class DefaultController extends AbstractController
         ]);
     }
 
-
     /**
      * @Route("api/recipes", name="recipes")
      * @return Response
      */
-    Public function getRecipes()
+    Public function getAllRecipes()
     {
         $data = [];
         $recipes = $this->getDoctrine()
@@ -35,11 +36,21 @@ class DefaultController extends AbstractController
             ->findAll();
 
         foreach ($recipes as $recipe) {
+            $user = $this->getDoctrine()
+                ->getRepository(User::class)
+                ->find($recipe->getUserId());
+
+            $ingredients = $this->getDoctrine()
+                ->getRepository(Ingredients::class)
+                ->findByRecipe($recipe->getId());
+
             $data [] = [
                 'id'=> $recipe->getId(),
                 'name' => $recipe->getName(),
-                'author' => $recipe->getAuthorId(),
-                'description' => $recipe->getDescription()
+                'user' => $user->getFirstName().' '.($user->getLastName()??'') ,
+                'description' => $recipe->getDescription(),
+                'dateCreated' => $recipe->getDateCreated(),
+                'ingredients' => $ingredients
             ];
         }
 
@@ -71,7 +82,7 @@ class DefaultController extends AbstractController
 
         $data [] = [
             'name' => $recipe->getName(),
-            'author' => $recipe->getAuthorId(),
+            'user' => $recipe->getUserId(),
             'description' => $recipe->getDescription()
         ];
 
@@ -104,8 +115,12 @@ class DefaultController extends AbstractController
         $recipe = new Recipe();
         $recipe->setName($name);
         $recipe->setDescription($description);
-        $recipe->setAuthorId(1);
+
         //TODO:: Refactor once user module is implemented
+        $user = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->find(rand(1,10));
+        $recipe->setUser($user);
 
         // tell Doctrine you want to (eventually) save the Recipe (no queries yet)
         $entityManager->persist($recipe);
@@ -114,5 +129,52 @@ class DefaultController extends AbstractController
         $entityManager->flush();
 
         return new JsonResponse(['status' => 'Recipe created!'], Response::HTTP_CREATED);
+    }
+
+    /**
+     * @Route("api/recipe/update/{id}", name="updateRecipe", methods={"PUT"})
+     * @param $id
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function update($id, Request $request): JsonResponse
+    {
+        $recipe = $this->getDoctrine()
+            ->getRepository(Recipe::class)
+            ->findOneBy(['id' => $id]);
+
+        $data = json_decode($request->getContent(), true);
+
+        if (empty($name) || empty($categoryTag) || empty($description)) {
+            throw new NotFoundHttpException('Expecting mandatory parameters!');
+        }
+
+        empty($data['name']) ? true : $recipe->setName($data['name']);
+        empty($data['category']) ? true : $recipe->setCategoryTag($data['category']);
+        empty($data['description']) ? true : $recipe->setDescription($data['description']);
+        empty($data['ingredients']) ? true : $recipe->setIngredients($data['ingredients']);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($recipe);
+        $entityManager->flush();
+
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("api/recipe/delete/{id}", name="deleteRecipe", methods={"DELETE"})
+     * @param $id
+     * @return JsonResponse
+     */
+    public function delete($id): JsonResponse
+    {
+        $recipe = $this->getDoctrine()
+            ->getRepository(Recipe::class)
+            ->findOneBy(['id' => $id]);
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($recipe);
+        $entityManager->flush();
+
+        return new JsonResponse(['status' => 'Recipe deleted'], Response::HTTP_OK);
     }
 }

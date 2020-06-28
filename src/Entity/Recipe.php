@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -27,14 +28,46 @@ class Recipe
     private $description;
 
     /**
-     * @ORM\Column(type="blob", nullable=true)
-     */
-    private $image_url;
-
-    /**
      * @ORM\Column(type="integer")
      */
-    private $author_id;
+    private $userId;
+
+    /**
+     * @ORM\Column(type="blob", nullable=true)
+     */
+    private $imageUrl;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true))
+     */
+    private $dateCreated;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Ingredients", mappedBy="recipe")
+     */
+    private $ingredients;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $categoryId;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="recipe")
+     */
+    private $category;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="recipe", cascade={"persist"})
+     */
+    private $user;
+
+    /**
+     * Recipe constructor.
+     */
+    public function __construct() {
+        $this->ingredients = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -74,17 +107,76 @@ class Recipe
     {
         $this->image_url = $image_url;
 
+        return $this;    }
+
+    public function getUserId(): ?int
+    {
+        return $this->userId;
+    }
+
+    public function setUserId(int $userId): self
+    {
+        $this->userId = $userId;
+
         return $this;
     }
 
-    public function getAuthorId(): ?int
+    public function getDateCreated(): ?\DateTimeInterface
     {
-        return $this->author_id;
+        return $this->dateCreated;
     }
 
-    public function setAuthorId(int $author_id): self
+    public function setDateCreated(\DateTimeInterface $dateCreated): self
     {
-        $this->author_id = $author_id;
+        $this->dateCreated = $dateCreated;
+
+        return $this;
+    }
+
+    public function getIngredients()
+    {
+        return $this->ingredients;
+    }
+
+    public function setIngredients(Ingredients $ingredients)
+    {
+        $this->ingredients = $ingredients;
+
+        return $this;
+    }
+
+    public function getCategoryId(): ?int
+    {
+        return $this->categoryId;
+    }
+
+    public function setCategoryId(?int $categoryId): self
+    {
+        $this->categoryId = $categoryId;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): self
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
