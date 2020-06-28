@@ -36,7 +36,7 @@ class viewRecipe extends Component {
                         ) : (
                             <div className={'row'}>
                                 { this.state.recipe.map(recipe =>
-                                    <div className="col-md-10 offset-md-1 row-block" key={recipe.id}>
+                                    <div className="col-md-10 offset-md-1 row-block">
                                         <div className="media">
                                             <div className="media-left align-self-center">
                                                 <img className="rounded-circle"
@@ -45,6 +45,18 @@ class viewRecipe extends Component {
                                             <div className="media-body">
                                                 <h4>{recipe.name}</h4>
                                                 <p>{recipe.description}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="container ingredient-cnt">
+                                            <p>Ingredients:</p>
+                                            <div className="list-group">
+                                                {recipe.ingredients.map(ingredient =>
+                                                    // Return the element. Also pass key
+                                                    <a href="#" className="list-group-item list-group-item-action list-group-item-dark">
+                                                        {ingredient.name} - {ingredient.quantity}
+                                                    </a>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

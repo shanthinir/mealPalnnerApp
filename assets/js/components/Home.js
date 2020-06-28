@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {Route, Switch,Redirect, Link, withRouter} from 'react-router-dom';
-import Recipes from './Recipes';
-import viewRecipe from './viewRecipe';
-import submitRecipe from './submitRecipe';
+import Recipes from './Recipe/Recipes';
+import viewRecipe from './Recipe/viewRecipe';
+import submitRecipe from './Recipe/submitRecipe';
 
 class Home extends Component {
 
