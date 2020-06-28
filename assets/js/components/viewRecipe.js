@@ -37,20 +37,16 @@ class viewRecipe extends Component {
                             <div className={'row'}>
                                 { this.state.recipe.map(recipe =>
                                     <div className="col-md-10 offset-md-1 row-block" key={recipe.id}>
-                                        <ul id="sortable">
-                                            <li>
-                                                <div className="media">
-                                                    <div className="media-left align-self-center">
-                                                        <img className="rounded-circle"
-                                                             src={recipe.imageURL}/>
-                                                    </div>
-                                                    <div className="media-body">
-                                                        <h4>{recipe.name}</h4>
-                                                        <p>{recipe.description}</p>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
+                                        <div className="media">
+                                            <div className="media-left align-self-center">
+                                                <img className="rounded-circle"
+                                                     src={recipe.imageURL}/>
+                                            </div>
+                                            <div className="media-body">
+                                                <h4>{recipe.name}</h4>
+                                                <p>{recipe.description}</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                             </div>

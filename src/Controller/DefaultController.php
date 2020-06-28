@@ -19,7 +19,7 @@ class DefaultController extends AbstractController
      */
     public function index()
     {
-        return $this->render('default/index.html.twig', [
+        return $this->render('layout/index.html.twig', [
             'controller_name' => 'DefaultController',
         ]);
     }
@@ -79,11 +79,15 @@ class DefaultController extends AbstractController
                 'No Recipe found for id '.$id
             );
         }
+        $ingredients = $this->getDoctrine()
+            ->getRepository(Ingredients::class)
+            ->findByRecipe($recipe->getId());
 
         $data [] = [
             'name' => $recipe->getName(),
             'user' => $recipe->getUserId(),
-            'description' => $recipe->getDescription()
+            'description' => $recipe->getDescription(),
+            'ingredients' => $ingredients
         ];
 
         $response = new Response();
