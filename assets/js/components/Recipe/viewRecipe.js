@@ -27,7 +27,7 @@ class viewRecipe extends Component {
                 <section className="row-section">
                     <div className="container">
                         <div className="row">
-                            <h2 className="text-center"><span>Recipe in detail</span>Created by Shanthini Rajarathinam </h2>
+                            <h2 className="text-center"><span>Recipe in detail</span></h2>
                         </div>
                         {loading ? (
                             <div className={'row text-center'}>
@@ -48,7 +48,7 @@ class viewRecipe extends Component {
                                             </div>
                                         </div>
 
-                                        <div className="container ingredient-cnt">
+                                        <div className="container ingredient-cnt col-md-10 offset-md-1 row-block">
                                             <p>Ingredients:</p>
                                             <div className="list-group">
                                                 {recipe.ingredients.map(ingredient =>
@@ -59,6 +59,7 @@ class viewRecipe extends Component {
                                                 )}
                                             </div>
                                         </div>
+                                        <div className="col-md-10 offset-md-1 row-block">Created by {recipe.user}</div>
                                     </div>
                                 )}
                             </div>

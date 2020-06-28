@@ -79,13 +79,17 @@ class DefaultController extends AbstractController
                 'No Recipe found for id '.$id
             );
         }
+        $user = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->find($recipe->getUserId());
+
         $ingredients = $this->getDoctrine()
             ->getRepository(Ingredients::class)
             ->findByRecipe($recipe->getId());
 
         $data [] = [
             'name' => $recipe->getName(),
-            'user' => $recipe->getUserId(),
+            'user' => $user->getFirstName().' '.($user->getLastName()??'') ,
             'description' => $recipe->getDescription(),
             'ingredients' => $ingredients
         ];
