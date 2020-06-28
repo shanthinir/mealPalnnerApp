@@ -13,3 +13,6 @@ div.wrapper {
 .result.active {
     display: block;
 }
+div.error-msg {
+    color: darkred;
+}

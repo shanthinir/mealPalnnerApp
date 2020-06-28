@@ -19,7 +19,7 @@ class DefaultController extends AbstractController
      */
     public function index()
     {
-        return $this->render('default/index.html.twig', [
+        return $this->render('layout/index.html.twig', [
             'controller_name' => 'DefaultController',
         ]);
     }
@@ -79,11 +79,19 @@ class DefaultController extends AbstractController
                 'No Recipe found for id '.$id
             );
         }
+        $user = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->find($recipe->getUserId());
+
+        $ingredients = $this->getDoctrine()
+            ->getRepository(Ingredients::class)
+            ->findByRecipe($recipe->getId());
 
         $data [] = [
             'name' => $recipe->getName(),
-            'user' => $recipe->getUserId(),
-            'description' => $recipe->getDescription()
+            'user' => $user->getFirstName().' '.($user->getLastName()??'') ,
+            'description' => $recipe->getDescription(),
+            'ingredients' => $ingredients
         ];
 
         $response = new Response();
@@ -108,7 +116,7 @@ class DefaultController extends AbstractController
         $name = $data['name'];
         $description = $data['description'];
 
-        if (empty($name) || empty($description)) {
+        if (empty($this->validateInput($name)) || empty($this->validateInput($description))) {
             throw new NotFoundHttpException('Expecting mandatory parameters!');
         }
 
@@ -145,14 +153,18 @@ class DefaultController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        if (empty($name) || empty($categoryTag) || empty($description)) {
+        $name = $data['name'] ?? '';
+        $description = $data['description'] ?? '';
+        $ingredients = $data['ingredients'] ?? '';
+
+        if ($this->validateInput($name) || $this->validateInput($description) || $this->validateInput($ingredients)) {
             throw new NotFoundHttpException('Expecting mandatory parameters!');
         }
 
-        empty($data['name']) ? true : $recipe->setName($data['name']);
-        empty($data['category']) ? true : $recipe->setCategoryTag($data['category']);
-        empty($data['description']) ? true : $recipe->setDescription($data['description']);
-        empty($data['ingredients']) ? true : $recipe->setIngredients($data['ingredients']);
+        $recipe->setName($data['name']);
+        $recipe->setCategoryTag($data['category']);
+        $recipe->setDescription($data['description']);
+        $recipe->setIngredients($data['ingredients']);
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($recipe);
@@ -176,5 +188,17 @@ class DefaultController extends AbstractController
         $entityManager->flush();
 
         return new JsonResponse(['status' => 'Recipe deleted'], Response::HTTP_OK);
+    }
+
+    /**
+     * Basic validation for data input values
+     * @param $value
+     * @return string
+     */
+    public function validateInput($value) {
+        $value = trim($value);
+        $value = stripslashes($value);
+        $value = htmlspecialchars($value);
+        return $value;
     }
 }
