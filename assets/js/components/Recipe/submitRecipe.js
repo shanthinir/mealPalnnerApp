@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
+function ValidationMessage(props) {
+    if (!props.valid) {
+        return <div className='error-msg'>{props.message}</div>
+    }
+    return null;
+}
+
 class submitRecipe extends Component {
 
     constructor(props) {
@@ -11,20 +18,55 @@ class submitRecipe extends Component {
         this.onSubmit = this.onSubmit.bind(this);
 
         this.state = {
-            name: '',
-            description: '',
+            name: '', validName: false,
+            description: '', validDescription: false,
             ingredients: '',
             message: '',
-            showResult: false
+            showResult: false,
+            formValid: false,
+            errorMsg: {}
         }
     }
 
+    validateForm() {
+        const {validName, validDescription} = this.state;
+        this.setState({
+            formValid: validDescription && validName
+        })
+    }
+
+    validateRecipeName() {
+        const {name} = this.state;
+        let validName = true;
+        let errorMsg = {...this.state.errorMsg};
+
+        if (name.length < 3) {
+            validName = false;
+            errorMsg.name = 'Must be at least 5 characters long'
+        }
+
+        this.setState({validName, errorMsg}, this.validateForm)
+    }
+
+    validateRecipeDescription() {
+        const {description} = this.state;
+        let validDescription = true;
+        let errorMsg = {...this.state.errorMsg};
+
+        if (description.length < 10) {
+            validDescription = false;
+            errorMsg.description = 'Must be at least 10 characters long'
+        }
+
+        this.setState({validDescription, errorMsg}, this.validateForm)
+    }
+
     onChangeName(e) {
-        this.setState({ name: e.target.value })
+        this.setState({ name: e.target.value }, this.validateRecipeName())
     }
 
     onChangeDescription(e) {
-        this.setState({ description: e.target.value })
+        this.setState({ description: e.target.value }, this.validateRecipeDescription())
     }
 
     onChangeIngredients(e) {
@@ -59,10 +101,12 @@ class submitRecipe extends Component {
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group">
                         <label>Name</label>
+                        <ValidationMessage valid={this.state.validName} message={this.state.errorMsg.name} />
                         <input type="text" value={this.state.name} onChange={this.onChangeName} className="form-control" />
                     </div>
                     <div className="form-group">
                         <label>Description</label>
+                        <ValidationMessage valid={this.state.validDescription} message={this.state.errorMsg.description} />
                         <input type="text" value={this.state.description} onChange={this.onChangeDescription} className="form-control" />
                     </div>
                     <div className="form-group">
